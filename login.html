@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Olympic School - Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/login.css">
+   <style>
+       
+    </style>
+</head>
+<body class="font-sans login-bg min-h-screen flex items-center justify-center p-4">
+    <div class="login-card bg-white rounded-xl w-full max-w-md overflow-hidden">
+        <!-- Header do Card - Layout atualizado com logo ao lado do texto -->
+        <div class="bg-blue-600 py-6 px-8">
+            <div class="flex items-center">
+                <!-- Logo -->
+                <img src="image/logo-Photoroom.png" alt="Olympic School Logo" class="h-16 mr-4">
+                
+                <!-- Texto ao lado da logo -->
+                <div>
+                    <h1 class="text-2xl font-bold text-white">Olympic School</h1>
+                    <p class="text-blue-100">Preparação Olímpica 2025</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Corpo do Card -->
+        <div class="p-8">
+            <h2 class="text-2xl font-bold text-gray-800 mb-1">Bem-vindo de volta</h2>
+            <p class="text-gray-600 mb-6">Entre na sua conta para continuar</p>
+            
+            <!-- Formulário de Login -->
+            <form id="loginForm" class="mb-6">
+                <div class="mb-4">
+                    <label for="email" class="block text-gray-700 font-medium mb-2">E-mail</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" id="email" class="input-field w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none" placeholder="seu@email.com" required>
+                    </div>
+                </div>
+                
+                <div class="mb-6">
+                    <label for="password" class="block text-gray-700 font-medium mb-2">Senha</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-400"></i>
+                        </div>
+                        <input type="password" id="password" class="input-field w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none" placeholder="••••••••" required>
+                        <button type="button" class="absolute right-3 top-3 text-gray-400 hover:text-gray-600" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex items-center justify-between mb-6">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="remember" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                        <label for="remember" class="ml-2 block text-gray-700">Lembrar-me</label>
+                    </div>
+                    <a href="#forgot" class="text-blue-600 hover:text-blue-800 text-sm font-medium">Esqueceu a senha?</a>
+                </div>
+                
+                <button type="submit" class="btn-login w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:shadow-md transition duration-300 flex items-center justify-center">
+                    <i class="fas fa-sign-in-alt mr-2"></i> Entrar
+                </button>
+            </form>
+            
+            <!-- Link para Cadastro -->
+            <div class="text-center">
+                <p class="text-gray-600">Não tem uma conta? <a href="cadastro.html" class="text-blue-600 hover:text-blue-800 font-medium">Cadastre-se</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Esqueceu a Senha -->
+    <div id="forgotModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+        <div class="bg-white rounded-xl w-full max-w-md p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold text-gray-800">Recuperar Senha</h3>
+                <button id="closeForgotModal" class="text-gray-400 hover:text-gray-600">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <p class="text-gray-600 mb-6">Digite seu e-mail cadastrado para receber instruções de recuperação de senha.</p>
+            
+            <form id="forgotForm">
+                <div class="mb-6">
+                    <label for="recoveryEmail" class="block text-gray-700 font-medium mb-2">E-mail</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-envelope text-gray-400"></i>
+                        </div>
+                        <input type="email" id="recoveryEmail" class="w-full pl-10 pr-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="seu@email.com" required>
+                    </div>
+                </div>
+                
+                <button type="submit" class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 transition duration-300">
+                    Enviar Link de Recuperação
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Mostrar/ocultar senha
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        
+        togglePassword.addEventListener('click', function() {
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            this.innerHTML = type === 'password' ? '<i class="fas fa-eye"></i>' : '<i class="fas fa-eye-slash"></i>';
+        });
+
+        // Modal Esqueceu a Senha
+        const forgotLink = document.querySelector('a[href="#forgot"]');
+        const forgotModal = document.getElementById('forgotModal');
+        const closeForgotModal = document.getElementById('closeForgotModal');
+        
+        forgotLink.addEventListener('click', function(e) {
+            e.preventDefault();
+            forgotModal.classList.remove('hidden');
+        });
+        
+        closeForgotModal.addEventListener('click', function() {
+            forgotModal.classList.add('hidden');
+        });
+
+        // Fechar modal ao clicar fora
+        window.addEventListener('click', function(e) {
+            if (e.target === forgotModal) {
+                forgotModal.classList.add('hidden');
+            }
+        });
+
+        // Formulário de Login com redirecionamento
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            if (email && password) {
+                // Simula um processamento de login
+                setTimeout(() => {
+                    window.location.href = "inicio.html";
+                }, 1000);
+            } else {
+                alert('Por favor, preencha todos os campos!');
+            }
+        });
+
+        // Formulário de Recuperação de Senha
+        document.getElementById('forgotForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Link de recuperação enviado para: ' + document.getElementById('recoveryEmail').value);
+            forgotModal.classList.add('hidden');
+        });
+    </script>
+</body>
+</html>
