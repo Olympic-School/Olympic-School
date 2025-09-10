@@ -559,152 +559,425 @@
         </section>
 
         <!-- Calendar Section -->
-        <section id="calendario" class="mb-16">
-            <div class="bg-white rounded-xl shadow-lg overflow-hidden">
-                <div class="p-6 border-b border-gray-200">
-                    <h2 class="text-2xl font-bold text-gray-800">Calendário Unificado 2025</h2>
-                    <p class="text-gray-600 mt-2">Datas importantes de todas as olimpíadas em um único lugar</p>
+        <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        oba: '#3B82F6',
+                        obfep: '#10B981',
+                        obmep: '#8B5CF6',
+                        opeq: '#F59E0B',
+                        onc: '#EF4444',
+                        obq: '#EC4899',
+                        obf: '#06B6D4',
+                        obbs: '#84CC16',
+                        obb: '#F97316',
+                        onhb: '#A855F7',
+                        obg: '#14B8A6'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .calendar-day {
+            transition: all 0.2s ease;
+            height: 80px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            cursor: pointer;
+        }
+        .calendar-day:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .event-pill {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .navigation-btn {
+            transition: all 0.3s ease;
+        }
+        .navigation-btn:hover {
+            transform: translateY(-2px);
+        }
+        .date-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1F2937;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            margin-bottom: 5px;
+        }
+        .date-tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1F2937 transparent transparent transparent;
+        }
+        .calendar-day:hover .date-tooltip {
+            opacity: 1;
+        }
+        .calendar-container {
+            display: none;
+        }
+        .calendar-container.active {
+            display: block;
+        }
+        .active-date {
+            background-color: #EFF6FF;
+            border: 2px solid #3B82F6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-blue-600 to-purple-700 text-white shadow-lg">
+        <div class="container mx-auto px-4 py-8">
+            <h1 class="text-4xl font-bold text-center mb-2">Calendário de Olimpíadas Científicas 2025</h1>
+            <p class="text-center text-blue-100 max-w-3xl mx-auto">Acompanhe todas as datas importantes das principais olimpíadas científicas do Brasil em um único lugar</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8 max-w-6xl">
+        <!-- Month Navigation -->
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 bg-white p-4 rounded-xl shadow-md">
+            <div class="flex items-center mb-4 md:mb-0">
+                <button id="prev-year" class="navigation-btn p-2 rounded-full bg-gray-100 hover:bg-gray-200 mr-2">
+                    <i class="fas fa-chevron-left text-gray-600"></i>
+                </button>
+                <h2 id="current-year" class="text-2xl font-bold text-gray-800 mx-2">2025</h2>
+                <button id="next-year" class="navigation-btn p-2 rounded-full bg-gray-100 hover:bg-gray-200 ml-2">
+                    <i class="fas fa-chevron-right text-gray-600"></i>
+                </button>
+            </div>
+            
+            <div class="flex flex-wrap justify-center gap-2">
+                <button data-month="0" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Jan</button>
+                <button data-month="1" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Fev</button>
+                <button data-month="2" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Mar</button>
+                <button data-month="3" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Abr</button>
+                <button data-month="4" class="month-btn px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium">Mai</button>
+                <button data-month="5" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Jun</button>
+                <button data-month="6" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Jul</button>
+                <button data-month="7" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Ago</button>
+                <button data-month="8" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Set</button>
+                <button data-month="9" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Out</button>
+                <button data-month="10" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Nov</button>
+                <button data-month="11" class="month-btn px-4 py-2 bg-gray-100 text-gray-800 rounded-lg hover:bg-gray-200 font-medium">Dez</button>
+            </div>
+        </div>
+        
+        <!-- Calendar Container -->
+        <div id="calendar-container" class="bg-white rounded-xl shadow-lg overflow-hidden">
+            <!-- Calendar will be dynamically inserted here -->
+        </div>
+        
+        <!-- Legend -->
+        <div class="mt-8 bg-white p-6 rounded-xl shadow-lg">
+            <h3 class="text-xl font-bold text-gray-800 mb-4">Legenda das Olimpíadas</h3>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-oba rounded-full mr-2"></div>
+                    <span class="text-sm">OBA - Astronomia</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-obfep rounded-full mr-2"></div>
+                    <span class="text-sm">OBFEP - Física</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-obmep rounded-full mr-2"></div>
+                    <span class="text-sm">OBMEP - Matemática</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-opeq rounded-full mr-2"></div>
+                    <span class="text-sm">OPEQ - Química</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-onc rounded-full mr-2"></div>
+                    <span class="text-sm">ONC - Ciências</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-obbs rounded-full mr-2"></div>
+                    <span class="text-sm">OBBS - Biologia Sintética</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-onhb rounded-full mr-2"></div>
+                    <span class="text-sm">ONHB - História</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-obg rounded-full mr-2"></div>
+                    <span class="text-sm">OBG - Geografia</span>
+                </div>
+                <div class="flex items-center">
+                    <div class="w-4 h-4 bg-bbb rounded-full mr-2"></div>
+                    <span class="text-sm">OBB - Biologia</span>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Dados das olimpíadas (datas e eventos) baseados na tabela fornecida
+        const olimpiadasData = {
+            2025: {
+                0: { // Janeiro
+                    27: [{name: 'OBB', type: 'Inscrições início', color: 'bg-bbb', tooltip: 'OBB - Inscrições abertas'}],
+                    31: [{name: 'OBB', type: 'Inscrições fim', color: 'bg-bbb', tooltip: 'OBB - Encerramento das inscrições'}]
+                },
+                1: { // Fevereiro
+                    5: [{name: 'OBMEP', type: 'Inscrições início', color: 'bg-obmep', tooltip: 'OBMEP - Inscrições abertas'}],
+                    17: [{name: 'OBMEP', type: 'Inscrições fim', color: 'bg-obmep', tooltip: 'OBMEP - Encerramento das inscrições'}],
+                    27: [{name: 'OBB', type: 'Inscrições fim', color: 'bg-bbb', tooltip: 'OBB - Último dia para inscrições'}]
+                },
+                2: { // Março
+                    1: [{name: 'OBFEP', type: 'Inscrições início', color: 'bg-obfep', tooltip: 'OBFEP - Inscrições abertas'}],
+                    14: [{name: 'OBB', type: '1ª Fase', color: 'bg-bbb', tooltip: 'OBB - Primeira fase'}],
+                    18: [{name: 'ONHB', type: 'Inscrições início', color: 'bg-onhb', tooltip: 'ONHB - Inscrições abertas'}],
+                    25: [{name: 'ONHB', type: 'Inscrições fim', color: 'bg-onhb', tooltip: 'ONHB - Encerramento das inscrições'}],
+                    31: [{name: 'OBFEP', type: 'Inscrições fim', color: 'bg-obfep', tooltip: 'OBFEP - Último dia para inscrições'}]
+                },
+                3: { // Abril
+                    1: [{name: 'ONC', type: 'Inscrições início', color: 'bg-onc', tooltip: 'ONC - Inscrições abertas'}],
+                    11: [{name: 'OBB', type: '2ª Fase', color: 'bg-bbb', tooltip: 'OBB - Segunda fase'}],
+                    25: [{name: 'ONHB', type: 'Inscrições fim', color: 'bg-onhb', tooltip: 'ONHB - Último dia para inscrições'}]
+                },
+                4: { // Maio
+                    1: [{name: 'ONC', type: 'Inscrições abertas', color: 'bg-onc', tooltip: 'ONC - Inscrições em andamento'}],
+                    1: [{name: 'OBA', type: 'Inscrições fim', color: 'bg-oba', tooltip: 'OBA - Último dia para inscrições'}],
+                    5: [{name: 'OBB', type: '3ª Fase', color: 'bg-bbb', tooltip: 'OBB - Terceira fase'}],
+                    5: [{name: 'ONHB', type: 'Fase 1 início', color: 'bg-onhb', tooltip: 'ONHB - Primeira fase (5-10 mai)'}],
+                    10: [{name: 'ONHB', type: 'Fase 1 fim', color: 'bg-onhb', tooltip: 'ONHB - Término da primeira fase'}],
+                    12: [{name: 'ONHB', type: 'Fase 2 início', color: 'bg-onhb', tooltip: 'ONHB - Segunda fase (12-17 mai)'}],
+                    12: [{name: 'OBG', type: 'Inscrições início', color: 'bg-obg', tooltip: 'OBG - Inscrições abertas'}],
+                    16: [{name: 'OBA', type: 'Prova', color: 'bg-oba', tooltip: 'OBA - Prova única'}],
+                    17: [{name: 'ONHB', type: 'Fase 2 fim', color: 'bg-onhb', tooltip: 'ONHB - Término da segunda fase'}],
+                    19: [{name: 'ONHB', type: 'Fase 3 início', color: 'bg-onhb', tooltip: 'ONHB - Terceira fase (19-24 mai)'}],
+                    24: [{name: 'ONHB', type: 'Fase 3 fim', color: 'bg-onhb', tooltip: 'ONHB - Término da terceira fase'}],
+                    26: [{name: 'ONHB', type: 'Fase 4 início', color: 'bg-onhb', tooltip: 'ONHB - Quarta fase (26-31 mai)'}],
+                    31: [{name: 'ONHB', type: 'Fase 4 fim', color: 'bg-onhb', tooltip: 'ONHB - Término da quarta fase'}]
+                },
+                5: { // Junho
+                    2: [{name: 'ONHB', type: 'Fase 5 início', color: 'bg-onhb', tooltip: 'ONHB - Quinta fase (2-7 jun)'}],
+                    3: [{name: 'OBMEP', type: '1ª Fase', color: 'bg-obmep', tooltip: 'OBMEP - Primeira fase'}],
+                    7: [{name: 'ONHB', type: 'Fase 5 fim', color: 'bg-onhb', tooltip: 'ONHB - Término da quinta fase'}],
+                    9: [{name: 'ONHB', type: 'Fase 6 início', color: 'bg-onhb', tooltip: 'ONHB - Sexta fase (9-14 jun)'}],
+                    11: [{name: 'OBG', type: 'Inscrições fim', color: 'bg-obg', tooltip: 'OBG - Encerramento das inscrições'}],
+                    14: [{name: 'ONHB', type: 'Fase 6 fim', color: 'bg-onhb', tooltip: 'ONHB - Término da sexta fase'}],
+                    14: [{name: 'OBB', type: 'Resultados', color: 'bg-bbb', tooltip: 'OBB - Resultados finais'}]
+                },
+                6: { // Julho
+                    11: [{name: 'OBG', type: 'Inscrições fim', color: 'bg-obg', tooltip: 'OBG - Último dia para inscrições'}],
+                    31: [{name: 'OBFEP', type: 'Inscrições fim', color: 'bg-obfep', tooltip: 'OBFEP - Encerramento das inscrições'}]
+                },
+                7: { // Agosto
+                    1: [{name: 'ONC', type: 'Inscrições fim', color: 'bg-onc', tooltip: 'ONC - Último dia para inscrições'}],
+                    5: [{name: 'OBG', type: '1ª Fase início', color: 'bg-obg', tooltip: 'OBG - Primeira fase online (5-8 ago)'}],
+                    8: [{name: 'OBG', type: '1ª Fase fim', color: 'bg-obg', tooltip: 'OBG - Término da primeira fase'}],
+                    12: [{name: 'OBFEP', type: '1ª Fase', color: 'bg-obfep', tooltip: 'OBFEP - Prova objetiva'}],
+                    12: [{name: 'OBG', type: '2ª Fase início', color: 'bg-obg', tooltip: 'OBG - Segunda fase online (12-15 ago)'}],
+                    14: [{name: 'ONC', type: '1ª Fase início', color: 'bg-onc', tooltip: 'ONC - Primeira fase online (14-16 ago)'}],
+                    15: [{name: 'OBG', type: '2ª Fase fim', color: 'bg-obg', tooltip: 'OBG - Término da segunda fase'}],
+                    16: [{name: 'ONC', type: '1ª Fase fim', color: 'bg-onc', tooltip: 'ONC - Término da primeira fase'}],
+                    19: [{name: 'OBG', type: '3ª Fase início', color: 'bg-obg', tooltip: 'OBG - Terceira fase online (19-21 ago)'}],
+                    21: [{name: 'OBG', type: '3ª Fase fim', color: 'bg-obg', tooltip: 'OBG - Término da terceira fase'}],
+                    28: [{name: 'OPEQ', type: 'Inscrições fim', color: 'bg-opeq', tooltip: 'OPEQ - Último dia para inscrições'}],
+                    29: [{name: 'OPEQ', type: 'Prova', color: 'bg-opeq', tooltip: 'OPEQ - Prova única presencial'}],
+                    31: [{name: 'OBBS', type: 'Inscrições fim', color: 'bg-obbs', tooltip: 'OBBS - Encerramento das inscrições'}],
+                    31: [{name: 'ONHB', type: 'Final', color: 'bg-onhb', tooltip: 'ONHB - Final presencial na Unicamp'}]
+                },
+                8: { // Setembro
+                    1: [{name: 'OBBS', type: 'Prova início', color: 'bg-obbs', tooltip: 'OBBS - Prova online (1-8 set)'}],
+                    1: [{name: 'OBG', type: 'Resultados', color: 'bg-obg', tooltip: 'OBG - Resultados estaduais'}],
+                    8: [{name: 'OBBS', type: 'Prova fim', color: 'bg-obbs', tooltip: 'OBBS - Término da prova online'}],
+                    11: [{name: 'ONC', type: '2ª Fase início', color: 'bg-onc', tooltip: 'ONC - Segunda fase online (11-12 set)'}],
+                    12: [{name: 'ONC', type: '2ª Fase fim', color: 'bg-onc', tooltip: 'ONC - Término da segunda fase'}],
+                    30: [{name: 'OPEQ', type: 'Resultados', color: 'bg-opeq', tooltip: 'OPEQ - Divulgação de resultados'}]
+                },
+                9: { // Outubro
+                    1: [{name: 'ONC', type: 'Resultados', color: 'bg-onc', tooltip: 'ONC - Divulgação de resultados'}],
+                    1: [{name: 'OBBS', type: 'Resultados', color: 'bg-obbs', tooltip: 'OBBS - Divulgação de resultados'}],
+                    25: [{name: 'OBMEP', type: '2ª Fase', color: 'bg-obmep', tooltip: 'OBMEP - Segunda fase'}]
+                },
+                10: { // Novembro
+                    22: [{name: 'OBFEP', type: '2ª Fase', color: 'bg-obfep', tooltip: 'OBFEP - Prova discursiva'}],
+                    25: [{name: 'OBG', type: 'Final início', color: 'bg-obg', tooltip: 'OBG - Final nacional presencial (25-28 nov)'}],
+                    28: [{name: 'OBG', type: 'Final fim', color: 'bg-obg', tooltip: 'OBG - Término da final nacional'}]
+                },
+                11: { // Dezembro
+                    22: [{name: 'OBMEP', type: 'Resultados', color: 'bg-obmep', tooltip: 'OBMEP - Divulgação de resultados'}],
+                    31: [{name: 'OBFEP', type: 'Resultados', color: 'bg-obfep', tooltip: 'OBFEP - Divulgação de resultados'}]
+                }
+            }
+        };
+
+        // Variáveis globais
+        let currentYear = 2025;
+        let currentMonth = 4; // Maio
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            renderCalendar(currentYear, currentMonth);
+            setupEventListeners();
+        });
+
+        // Configurar event listeners
+        function setupEventListeners() {
+            // Navegação por ano
+            document.getElementById('prev-year').addEventListener('click', () => {
+                currentYear--;
+                updateYearDisplay();
+                renderCalendar(currentYear, currentMonth);
+            });
+            
+            document.getElementById('next-year').addEventListener('click', () => {
+                currentYear++;
+                updateYearDisplay();
+                renderCalendar(currentYear, currentMonth);
+            });
+            
+            // Botões de mês
+            document.querySelectorAll('.month-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentMonth = parseInt(btn.getAttribute('data-month'));
+                    renderCalendar(currentYear, currentMonth);
+                    updateActiveMonthButton();
+                });
+            });
+        }
+
+        // Atualizar o display do ano
+        function updateYearDisplay() {
+            document.getElementById('current-year').textContent = currentYear;
+        }
+
+        // Atualizar o botão do mês ativo
+        function updateActiveMonthButton() {
+            document.querySelectorAll('.month-btn').forEach(btn => {
+                const month = parseInt(btn.getAttribute('data-month'));
+                if (month === currentMonth) {
+                    btn.classList.remove('bg-gray-100', 'text-gray-800');
+                    btn.classList.add('bg-blue-500', 'text-white');
+                } else {
+                    btn.classList.remove('bg-blue-500', 'text-white');
+                    btn.classList.add('bg-gray-100', 'text-gray-800');
+                }
+            });
+        }
+
+        // Renderizar o calendário
+        function renderCalendar(year, month) {
+            const calendarContainer = document.getElementById('calendar-container');
+            const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 
+                               'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+            
+            // Encontrar o primeiro dia do mês e quantos dias tem o mês
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            
+            // Gerar o HTML do calendário
+            let calendarHTML = `
+                <div class="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-indigo-50">
+                    <h2 class="text-2xl font-bold text-gray-800">${monthNames[month]} ${year}</h2>
+                    <p class="text-gray-600 mt-2">Passe o mouse sobre as datas para ver os detalhes</p>
                 </div>
                 
                 <div class="p-6">
-                    <div class="flex justify-between items-center mb-6">
-                        <h3 class="text-xl font-bold text-gray-800">Maio 2025</h3>
-                        <div class="flex space-x-2">
-                            <a href="index.html" target="_blank" class="p-2 rounded-full hover:bg-gray-100 inline-block">
-                            <i class="fas fa-chevron-left text-gray-600"></i>
-                            </a>
-
-                            <a href="index.html" target="_blank" class="p-2 rounded-full hover:bg-gray-100 inline-block">
-                            <i class="fas fa-chevron-right text-gray-600"></i>
-                            </a>
-                        </div>
-                    </div>
-                    
-                    <!-- Calendar Grid -->
-                    <div class="grid grid-cols-7 gap-2 mb-4">
-                        <div class="text-center font-medium text-gray-500 py-2">Dom</div>
-                        <div class="text-center font-medium text-gray-500 py-2">Seg</div>
-                        <div class="text-center font-medium text-gray-500 py-2">Ter</div>
-                        <div class="text-center font-medium text-gray-500 py-2">Qua</div>
-                        <div class="text-center font-medium text-gray-500 py-2">Qui</div>
-                        <div class="text-center font-medium text-gray-500 py-2">Sex</div>
-                        <div class="text-center font-medium text-gray-500 py-2">Sáb</div>
+                    <div class="grid grid-cols-7 gap-2 mb-2">
+                        <div class="text-center font-medium text-gray-500 py-2 text-sm">Dom</div>
+                        <div class="text-center font-medium text-gray-500 py-2 text-sm">Seg</div>
+                        <div class="text-center font-medium text-gray-500 py-2 text-sm">Ter</div>
+                        <div class="text-center font-medium text-gray-500 py-2 text-sm">Qua</div>
+                        <div class="text-center font-medium text-gray-500 py-2 text-sm">Qui</div>
+                        <div class="text-center font-medium text-gray-500 py-2 text-sm">Sex</div>
+                        <div class="text-center font-medium text-gray-500 py-2 text-sm">Sáb</div>
                     </div>
                     
                     <div class="grid grid-cols-7 gap-2">
-                        <!-- Week 1 -->
-                        <div class="text-center py-2 text-gray-400">27</div>
-                        <div class="text-center py-2 text-gray-400">28</div>
-                        <div class="text-center py-2 text-gray-400">29</div>
-                        <div class="text-center py-2 text-gray-400">30</div>
-                        <div class="text-center py-2">1</div>
-                        <div class="text-center py-2">2</div>
-                        <div class="text-center py-2">3</div>
-                        
-                        <!-- Week 2 -->
-                        <div class="text-center py-2">4</div>
-                        <div class="text-center py-2">5</div>
-                        <div class="text-center py-2 active">6 <span class="block text-xs text-blue-600">OBA</span></div>
-                        <div class="text-center py-2">7</div>
-                        <div class="text-center py-2">8</div>
-                        <div class="text-center py-2">9</div>
-                        <div class="text-center py-2">10</div>
-                        
-                        <!-- Week 3 -->
-                        <div class="text-center py-2">11</div>
-                        <div class="text-center py-2">12</div>
-                        <div class="text-center py-2">13</div>
-                        <div class="text-center py-2 active">14 <span class="block text-xs text-purple-600">OBMEP</span></div>
-                        <div class="text-center py-2">15</div>
-                        <div class="text-center py-2">16</div>
-                        <div class="text-center py-2">17</div>
-                        
-                        <!-- Week 4 -->
-                        <div class="text-center py-2">18</div>
-                        <div class="text-center py-2">19</div>
-                        <div class="text-center py-2 active">20 <span class="block text-xs text-green-600">OBFEP</span></div>
-                        <div class="text-center py-2">21</div>
-                        <div class="text-center py-2">22</div>
-                        <div class="text-center py-2">23</div>
-                        <div class="text-center py-2">24</div>
-                        
-                        <!-- Week 5 -->
-                        <div class="text-center py-2">25</div>
-                        <div class="text-center py-2">26</div>
-                        <div class="text-center py-2">27</div>
-                        <div class="text-center py-2">28</div>
-                        <div class="text-center py-2">29</div>
-                        <div class="text-center py-2">30</div>
-                        <div class="text-center py-2">31</div>
-                    </div>
-                    
-                    <!-- Legend -->
-                    <div class="mt-8">
-                        <h4 class="font-medium text-gray-800 mb-3">Legenda:</h4>
-                        <div class="flex flex-wrap gap-4">
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-blue-600 rounded-full mr-2"></div>
-                                <span class="text-sm">OBA</span>
+            `;
+            
+            // Preencher dias vazios no início do mês
+            for (let i = 0; i < firstDay; i++) {
+                calendarHTML += `<div class="calendar-day text-center p-2 rounded-lg bg-gray-100 text-gray-400"></div>`;
+            }
+            
+            // Preencher os dias do mês
+            for (let day = 1; day <= daysInMonth; day++) {
+                const dateKey = `${year}-${month}-${day}`;
+                const hasEvent = olimpiadasData[year] && olimpiadasData[year][month] && olimpiadasData[year][month][day];
+                
+                // Criar tooltip text se houver eventos
+                let tooltipText = `${day} de ${monthNames[month]}`;
+                if (hasEvent) {
+                    tooltipText += " - " + olimpiadasData[year][month][day].map(event => 
+                        `${event.name}: ${event.type}`
+                    ).join(", ");
+                } else {
+                    tooltipText += " - Nenhum evento";
+                }
+                
+                calendarHTML += `
+                    <div class="calendar-day text-center p-2 rounded-lg border border-gray-200 ${hasEvent ? 'active-date' : ''}">
+                        <span class="date-tooltip">${tooltipText}</span>
+                        <div class="font-bold">${day}</div>
+                        <div class="flex flex-col mt-1">
+                `;
+                
+                // Adicionar eventos para este dia, se houver
+                if (hasEvent) {
+                    olimpiadasData[year][month][day].forEach(event => {
+                        calendarHTML += `
+                            <div class="${event.color} text-white text-xs event-pill">
+                                ${event.name}
                             </div>
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-green-600 rounded-full mr-2"></div>
-                                <span class="text-sm">OBFEP</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-purple-600 rounded-full mr-2"></div>
-                                <span class="text-sm">OBMEP</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-yellow-500 rounded-full mr-2"></div>
-                                <span class="text-sm">OQSP</span>
-                            </div>
-                            <div class="flex items-center">
-                                <div class="w-3 h-3 bg-red-500 rounded-full mr-2"></div>
-                                <span class="text-sm">ONC</span>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Upcoming Events -->
-                    <div class="mt-8">
-                        <h4 class="font-medium text-gray-800 mb-4">Próximos Eventos:</h4>
-                        <div class="space-y-4">
-                            <div class="flex items-start">
-                                <div class="bg-blue-100 p-2 rounded-lg mr-4">
-                                    <i class="fas fa-star text-blue-600"></i>
-                                </div>
-                                <div>
-                                    <h5 class="font-medium text-gray-800">OBA - Prova Nacional</h5>
-                                    <p class="text-sm text-gray-600">19 de maio de 2025 • Todas as escolas</p>
-                                    <a href="#" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Adicionar ao calendário</a>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="bg-purple-100 p-2 rounded-lg mr-4">
-                                    <i class="fas fa-square-root-alt text-purple-600"></i>
-                                </div>
-                                <div>
-                                    <h5 class="font-medium text-gray-800">OBMEP - 1ª Fase</h5>
-                                    <p class="text-sm text-gray-600">4 de junho de 2025 • Todas as escolas</p>
-                                    <a href="#" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Adicionar ao calendário</a>
-                                </div>
-                            </div>
-                            <div class="flex items-start">
-                                <div class="bg-green-100 p-2 rounded-lg mr-4">
-                                    <i class="fas fa-atom text-green-600"></i>
-                                </div>
-                                <div>
-                                    <h5 class="font-medium text-gray-800">OBFEP - Inscrições</h5>
-                                    <p class="text-sm text-gray-600">20 de junho a 15 de julho de 2025 • Online</p>
-                                    <a href="#" class="text-blue-600 text-sm hover:underline mt-1 inline-block">Adicionar ao calendário</a>
-                                </div>
-                            </div>
-                        </div>
+                        `;
+                    });
+                }
+                
+                calendarHTML += `</div></div>`;
+                
+                // Quebra de linha no final de cada semana
+                if ((firstDay + day) % 7 === 0 && day !== daysInMonth) {
+                    calendarHTML += `</div><div class="grid grid-cols-7 gap-2">`;
+                }
+            }
+            
+            // Preencher dias vazios no final do mês
+            const lastDay = new Date(year, month, daysInMonth).getDay();
+            for (let i = lastDay + 1; i < 7; i++) {
+                calendarHTML += `<div class="calendar-day text-center p-2 rounded-lg bg-gray-100 text-gray-400"></div>`;
+            }
+            
+            calendarHTML += `
                     </div>
                 </div>
-            </div>
-        </section>
-
+            `;
+            
+            calendarContainer.innerHTML = calendarHTML;
+            updateActiveMonthButton();
+        }
+    </script>
         <!-- Ranking Section -->
         <section id="ranking" class="mb-16">
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
